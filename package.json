@@ -1,6 +1,6 @@
 {
   "name": "rrdcached-binding",
-  "version": "0.1",
+  "version": "0.1.0",
   "description": "Node.js lib connecting to the rrdcached",
   "main": "rrdcached.js",
   "scripts": {},
