@@ -46,14 +46,16 @@ var RRDCache = function(){
 			}
 			self.client.on('data', function(data){
 				console.log("received: '"+data+"'");
+				if(!self.buffer){
+					self.buffer = "";
+				}
 				self.buffer += data;
-				if(status != null){
-					status = self.buffer.substring(0, self.buffer.indexOf(' '));
+				if(status == null){
+					status = parseInt(self.buffer.substring(0, self.buffer.indexOf(' ')));
 				}
 				var receivedAll = status < 0 || ((self.buffer.match(/\n/g) || []).length == status + 1);
-				
 				if(receivedAll){
-					self.buffer = '';
+					self.buffer = "";
 					status = null;
 					callback(null, self.processData(data));
 				}
@@ -68,10 +70,10 @@ var RRDCache = function(){
 		var statusIdx = lines[0].indexOf(' ');
 		var status = parseInt(lines[0].substring(0, statusIdx));
 		var error = status < 0 ? true : false;
-		var info = Array();
-		if(error != false){
-			for(i = 1; i < status; i++){
-				info.push(lines[i]);
+		var info = "";
+		if(error == false){
+			for(var i = 1; i < status; i++){
+				info += lines[i] + "\n";
 			}
 		}
 		this.lastReply = {
