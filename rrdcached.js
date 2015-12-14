@@ -21,11 +21,9 @@ var RRDCache = function(){
 			address = ':42217';
 		}
 		var options = (address.startsWith('unix:/') ? {path: address.substring(5)} : {host: address.substring(0,address.indexOf(':')), port: address.substring(address.indexOf(':') + 1)});
-		console.log(options);
 		self.client = net.createConnection(options);
 		self.client.on('connect', function() {
 			this.setEncoding('ascii');
-			console.log('on connect');
 			callback();
 		});
 	};
@@ -34,7 +32,6 @@ var RRDCache = function(){
 		var self = this;
 		var status = null;
 		if(self.client != null && command != null){
-			console.log('writing data');
 			// append newline to terminate command
 			if(command.substring(command.length - 1) != "\n"){
 				command += "\n";
@@ -45,7 +42,6 @@ var RRDCache = function(){
 				self.client.write(command, 'ascii');
 			}
 			self.client.on('data', function(data){
-				console.log("received: '"+data+"'");
 				if(!self.buffer){
 					self.buffer = "";
 				}
@@ -70,10 +66,10 @@ var RRDCache = function(){
 		var statusIdx = lines[0].indexOf(' ');
 		var status = parseInt(lines[0].substring(0, statusIdx));
 		var error = status < 0 ? true : false;
-		var info = "";
+		var info = Array();
 		if(error == false){
 			for(var i = 1; i < status; i++){
-				info += lines[i] + "\n";
+				info.push(lines[i]);
 			}
 		}
 		this.lastReply = {
