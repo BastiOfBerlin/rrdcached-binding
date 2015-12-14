@@ -1,0 +1,20 @@
+{
+  "name": "rrdcached-binding",
+  "version": "0.1",
+  "description": "Node.js lib connecting to the rrdcached",
+  "main": "rrdcached.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BastiOfBerlin/rrdcached-binding"
+  },
+  "keywords": [
+    "rrdtool",
+    "binding"
+  ],
+  "author": "Sebastian List",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "dependencies": {},
+  "devDependencies": {}
+}
