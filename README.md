@@ -18,9 +18,9 @@ The most important attributes will be `error`, which indicates if the command co
 See [PROTOCOL section](https://oss.oetiker.ch/rrdtool/doc/rrdcached.en.html#IPROTOCOL) for details about statuscode etc. and [Valid Commands](https://oss.oetiker.ch/rrdtool/doc/rrdcached.en.html#IValid_Commands) for a list of commands.
 
 ## Installation
-```
-npm install rrdcached-binding
-```
+rrdcached-binding is available via npmjs: https://www.npmjs.com/package/rrdcached-binding
+
+`npm install rrdcached-binding`
 
 ## Connecting
 ``` js
