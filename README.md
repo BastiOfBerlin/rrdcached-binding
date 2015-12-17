@@ -17,6 +17,11 @@ Most commands the daemon understands are encapsulated as own functions. Neverthe
 The most important attributes will be `error`, which indicates if the command completed normally, and the `info` array, which contains the actual result of the command.
 See [PROTOCOL section](https://oss.oetiker.ch/rrdtool/doc/rrdcached.en.html#IPROTOCOL) for details about statuscode etc. and [Valid Commands](https://oss.oetiker.ch/rrdtool/doc/rrdcached.en.html#IValid_Commands) for a list of commands.
 
+## Installation
+```
+npm install rrdcached-binding
+```
+
 ## Connecting
 ``` js
 RRD = require('./rrdcached');
