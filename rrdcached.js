@@ -8,6 +8,10 @@ if(typeof String.prototype.startsWith === 'undefined'){
 	}
 };
 
+var escapeRegExp = function(str) {
+    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
 var RRDCache = function(){
 	var client = null;
 	var buffer = '';
@@ -82,6 +86,10 @@ var processData = function(data){
 	return RRDCache.lastReply;
 };
 
+var replaceN = function(value){
+	return value.replace(new RegExp(escapeRegExp('N'), 'g'), parseInt(Date.now()/1000));
+}
+
 RRDCache.flush = function(filename, callback){
 	RRDCache.write(util.format("FLUSH %s", filename), callback);
 };
@@ -143,7 +151,7 @@ RRDCache.update = function(filename, values, callback){
 	} else {
 		newValues = values;
 	}
-	RRDCache.write(util.format("UPDATE %s %s", filename, newValues), callback);
+	RRDCache.write(util.format("UPDATE %s %s", filename, replaceN(newValues)), callback);
 };
 
 RRDCache.first = function(){
