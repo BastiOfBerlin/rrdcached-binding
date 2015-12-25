@@ -1,4 +1,6 @@
 'use strict';
+var RRDUtil = require('./util');
+var util = require('util');
 var net = require('net');
 
 if(typeof String.prototype.startsWith === 'undefined'){
@@ -146,7 +148,11 @@ RRDCache.update = function(filename, values, callback){
 	var newValues = "";
 	if(Array.isArray(values)){
 		for(var v of values){
-			newValues += v + " ";
+			if(Array.isArray(v)){
+				newValues += RRDUtil.buildUpdateString(v) + " ";
+			} else {
+				newValues += v + " ";
+			}
 		}
 	} else {
 		newValues = values;
@@ -197,4 +203,5 @@ RRDCache.getLastReply = function(){
 	return this.lastReply;
 };
 
+RRDCache.util = RRDUtil;
 module.exports = RRDCache;
