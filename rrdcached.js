@@ -1,5 +1,4 @@
 'use strict';
-var util = require('util')
 var net = require('net');
 
 if(typeof String.prototype.startsWith === 'undefined'){
@@ -37,6 +36,7 @@ RRDCache.write = function(command, callback){
 	var self = this;
 	var status = null;
 	if(self.client != null && command != null){
+		command = command.trim();
 		// append newline to terminate command
 		if(command.substring(command.length - 1) != "\n"){
 			command += "\n";
