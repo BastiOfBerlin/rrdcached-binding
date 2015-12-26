@@ -93,6 +93,9 @@ var replaceN = function(value){
 }
 
 RRDCache.flush = function(filename, callback){
+	if(filename === undefined){
+		callback(new Error("No filename specified!"));
+	}
 	RRDCache.write(util.format("FLUSH %s", filename), callback);
 };
 
@@ -105,10 +108,16 @@ RRDCache.help = function(command, callback){
 };
 
 RRDCache.pending = function(filename, callback){
+	if(filename === undefined){
+		callback(new Error("No filename specified!"));
+	}
 	RRDCache.write(util.format("PENDING %s", filename), callback);
 };
 
 RRDCache.forget = function(filename, callback){
+	if(filename === undefined){
+		callback(new Error("No filename specified!"));
+	}
 	RRDCache.write(util.format("FORGET %s", filename), callback);
 };
 
@@ -145,6 +154,9 @@ RRDCache.ping = function(callback){
 };
 
 RRDCache.update = function(filename, values, callback){
+	if(filename === undefined){
+		callback(new Error("No filename specified!"));
+	}
 	var newValues = "";
 	if(Array.isArray(values)){
 		for(var v of values){
@@ -160,24 +172,52 @@ RRDCache.update = function(filename, values, callback){
 	RRDCache.write(util.format("UPDATE %s %s", filename, replaceN(newValues)), callback);
 };
 
+RRDCache.fetch = function(filename, consFunction, options, callback){
+	if(filename === undefined){
+		callback(new Error("No filename specified!"));
+	}
+	if(consFunction === undefined){
+		callback(new Error("No consolidation function specified!"));
+	}
+	if(consFunction != "AVERAGE" && consFunction != "MIN" && consFunction != "MAX" && consFunction != "LAST"){
+		callback(new Error("Invalid consolidation function. Choose one of AVERAGE, MIN, MAX, LAST."));
+	}
+	var resolution = options.resolution !== undefined ? util.format("-r %s", options.resolution) : "";
+	var start = options.start !== undefined ? util.format("-s %s", options.resolution) : "";
+	var end = options.end !== undefined ? util.format("-e %s", options.end) : "";
+	var align = options.alignStart !== undefined && options.alignStart || options.a !== undefined && options.a ? "-a" : "";
+	RRDCache.write(util.format("FETCH %s %s %s %s %s %s", filename, consFunction, resolution, start, end, align), callback);
+};
+
 RRDCache.first = function(){
 	if(arguments.length >= 2 && arguments.length <=3){
 		var filename = arguments[0];
 		var rranum = arguments.length == 3 ? arguments[1] : 0;
 		var callback = arguments.length == 3 ? arguments[2]: arguments[1];
 		RRDCache.write(util.format("FIRST %s %d", filename, rranum), callback);
+	} else {
+		callback(new Error("Invalid number of arguments!"));
 	}
 };
 
 RRDCache.last = function(filename, callback){
+	if(filename === undefined){
+		callback(new Error("No filename specified!"));
+	}
 	RRDCache.write(util.format("LAST %s", filename), callback);
 };
 
 RRDCache.info = function(filename, callback){
+	if(filename === undefined){
+		callback(new Error("No filename specified!"));
+	}
 	RRDCache.write(util.format("INFO %s", filename), callback);
 };
 
 RRDCache.create = function(filename, options, DSDefinitions, RRADefinitions, callback){
+	if(filename === undefined){
+		callback(new Error("No filename specified!"));
+	}
 	var stepsize = options.stepsize !== undefined ? util.format("-s %d", options.stepsize) : "";
 	var begintime = options.begintime !== undefined ? util.format("-b %d", options.begintime) : "";
 	var o = options.o !== undefined && options.o ? "-O" : "";

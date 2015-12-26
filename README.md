@@ -43,6 +43,7 @@ RRD.connect('192.168.0.200:42217', function(err){
 Supported commands are:
 - `RRD.update(filename, values, callback)`
   - `values` can be a single String or an Array of String
+- `RRD.fetch(filename, consFunction, options, callback)`
 - `RRD.flush(filename, callback)`
 - `RRD.flushall(callback)`
 - `RRD.help(command, callback)`
@@ -58,6 +59,7 @@ Supported commands are:
 - `RRD.last(filename, callback)`
 - `RRD.info(filename, callback)`
 - `RRD.create(filename, options, DSDefinitions, RRADefinitions, callback)`
+
 - `RRD.batch(commands, callback)`
   - commands is currently an Array of String consisting of custom commands (see below)
 - `RRD.quit(callback)`
@@ -78,7 +80,7 @@ RRD.write('HELP FLUSHALL', function(err, reply){
 ```
 
 # TODO
-- [ ] FETCH command
+- [x] FETCH command
 - [ ] FETCHBIN command
 
 # Known issues
