@@ -186,7 +186,41 @@ RRDCache.fetch = function(filename, consFunction, options, callback){
 	var start = options !== null && options.start !== undefined ? util.format("-s %s", options.resolution) : "";
 	var end = options !== null && options.end !== undefined ? util.format("-e %s", options.end) : "";
 	var align = options !== null && (options.alignStart !== undefined && options.alignStart || options.a !== undefined && options.a) ? "-a" : "";
-	RRDCache.write(util.format("FETCH %s %s %s %s %s %s", filename, consFunction, resolution, start, end, align), callback);
+	RRDCache.write(util.format("FETCH %s %s %s %s %s %s", filename, consFunction, resolution, start, end, align), function(err, reply){
+		if(err){
+			callback(err);
+		}
+		reply.fetch = {};
+		var columns = Array();
+		for(var line of reply.info){
+			if(line.trim() === ""){
+				continue;
+			}
+			var split = line.split(": ");
+			if(split.length == 1){
+				for(var col of split[0].trim().split(" ")){
+					columns.push(col);
+				}
+			} else {
+				var insert = {};
+				insert.date = new Date(split[0] * 1000);
+				if(columns.length > 0){
+					insert.data = {};
+					var values = split[1].split(" ");
+					for(var i; i < values; i++){
+						insert.data[columns[i]] = values[i];
+					}
+				} else {
+					insert.data = Array();
+					for(var value of split[1].split(" ")){
+						insert.data.push(value);
+					}
+				}
+				reply.fetch[split[0]] = insert;
+			}
+		}
+		callback(null, reply);
+	});
 };
 
 RRDCache.first = function(){
