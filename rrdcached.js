@@ -182,10 +182,10 @@ RRDCache.fetch = function(filename, consFunction, options, callback){
 	if(consFunction != "AVERAGE" && consFunction != "MIN" && consFunction != "MAX" && consFunction != "LAST"){
 		callback(new Error("Invalid consolidation function. Choose one of AVERAGE, MIN, MAX, LAST."));
 	}
-	var resolution = options.resolution !== undefined ? util.format("-r %s", options.resolution) : "";
-	var start = options.start !== undefined ? util.format("-s %s", options.resolution) : "";
-	var end = options.end !== undefined ? util.format("-e %s", options.end) : "";
-	var align = options.alignStart !== undefined && options.alignStart || options.a !== undefined && options.a ? "-a" : "";
+	var resolution = options !== null && options.resolution !== undefined ? util.format("-r %s", options.resolution) : "";
+	var start = options !== null && options.start !== undefined ? util.format("-s %s", options.resolution) : "";
+	var end = options !== null && options.end !== undefined ? util.format("-e %s", options.end) : "";
+	var align = options !== null && (options.alignStart !== undefined && options.alignStart || options.a !== undefined && options.a) ? "-a" : "";
 	RRDCache.write(util.format("FETCH %s %s %s %s %s %s", filename, consFunction, resolution, start, end, align), callback);
 };
 
@@ -218,9 +218,9 @@ RRDCache.create = function(filename, options, DSDefinitions, RRADefinitions, cal
 	if(filename === undefined){
 		callback(new Error("No filename specified!"));
 	}
-	var stepsize = options.stepsize !== undefined ? util.format("-s %d", options.stepsize) : "";
-	var begintime = options.begintime !== undefined ? util.format("-b %d", options.begintime) : "";
-	var o = options.o !== undefined && options.o ? "-O" : "";
+	var stepsize = options !== null && options.stepsize !== undefined ? util.format("-s %d", options.stepsize) : "";
+	var begintime = options !== null && options.begintime !== undefined ? util.format("-b %d", options.begintime) : "";
+	var o = options !== null && options.o !== undefined && options.o ? "-O" : "";
 	RRDCache.write(util.format("CREATE %s %s %s %s %s %s", filename, stepsize, begintime, o, DSDefinitions, RRADefinitions), callback);
 };
 
