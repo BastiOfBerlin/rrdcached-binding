@@ -161,7 +161,7 @@ RRDCache.update = function(filename, values, callback){
 	if(Array.isArray(values)){
 		for(var v of values){
 			if(Array.isArray(v)){
-				newValues += RRDUtil.buildUpdateString(v) + " ";
+				newValues += v.join(":") + " ";
 			} else {
 				newValues += v + " ";
 			}
