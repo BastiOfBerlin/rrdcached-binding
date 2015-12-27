@@ -17,10 +17,12 @@ var RRDCache = function(){
 	var client = null;
 	var buffer = '';
 	var lastReply = null;
+	var running = false;
 };
 
 RRDCache.connect = function(address, callback){
 	var self = this;
+	self.pendingWrites = Array();
 	if(typeof address === 'undefined'){
 		address = 'unix:/tmp/rrdcached.sock';
 	} else if (address === ''){
@@ -36,38 +38,54 @@ RRDCache.connect = function(address, callback){
 
 RRDCache.write = function(command, callback){
 	var self = this;
-	var status = null;
-	if(self.client != null && command != null){
-		command = command.trim();
-		// append newline to terminate command
-		if(command.substring(command.length - 1) != "\n"){
-			command += "\n";
-		}
-		if(command === 'QUIT\n'){
-			self.client.end(command, 'ascii');
-		} else {
-			self.client.write(command, 'ascii');
-		}
-		self.client.on('data', function bufferData (data){
-			if(!self.buffer){
-				self.buffer = "";
-			}
-			self.buffer += data;
-			if(status == null){
-				status = parseInt(self.buffer.substring(0, self.buffer.indexOf(' ')));
-			}
-			var receivedAll = status < 0 || ((self.buffer.match(/\n/g) || []).length == status + 1);
-			if(receivedAll){
-				self.buffer = "";
-				status = null;
-				self.client.removeListener('data', bufferData);
-				callback(null, processData(data));
-			}
-		});
+	if(!self.running){
+		doWrite(self, command, callback);
 	} else {
-		callback(new Error('Not Connected!'));
+		self.pendingWrites.push({command: command, callback: callback});
 	}
 };
+
+var doWrite = function(self, command, callback){
+	self.running = true;
+		var status = null;
+		if(self.client != null && command != null){
+			command = command.trim();
+			// append newline to terminate command
+			if(command.substring(command.length - 1) != "\n"){
+				command += "\n";
+			}
+			if(command === 'QUIT\n'){
+				self.client.end(command, 'ascii');
+				self.pendingWrites = Array();
+			} else {
+				self.client.write(command, 'ascii');
+			}
+			self.client.on('data', function bufferData (data){
+				if(!self.buffer){
+					self.buffer = "";
+				}
+				self.buffer += data;
+				if(status == null){
+					status = parseInt(self.buffer.substring(0, self.buffer.indexOf(' ')));
+				}
+				var receivedAll = status < 0 || ((self.buffer.match(/\n/g) || []).length == status + 1);
+				if(receivedAll){
+					self.buffer = "";
+					status = null;
+					self.client.removeListener('data', bufferData);
+					callback(null, processData(data));
+					if(self.pendingWrites.length){
+						var pending = self.pendingWrites.pop();
+						doWrite(self, pending.command, pending.callback);
+					} else {
+						self.running = false;
+					}
+				}
+			});
+		} else {
+			callback(new Error('Not Connected!'));
+		}
+}
 
 var processData = function(data){
 	var lines = data.split('\n');
