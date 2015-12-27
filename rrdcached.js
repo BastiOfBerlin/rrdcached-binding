@@ -48,7 +48,7 @@ RRDCache.write = function(command, callback){
 		} else {
 			self.client.write(command, 'ascii');
 		}
-		self.client.on('data', function(data){
+		self.client.on('data', function bufferData (data){
 			if(!self.buffer){
 				self.buffer = "";
 			}
@@ -60,6 +60,7 @@ RRDCache.write = function(command, callback){
 			if(receivedAll){
 				self.buffer = "";
 				status = null;
+				self.client.removeListener('data', bufferData);
 				callback(null, processData(data));
 			}
 		});
